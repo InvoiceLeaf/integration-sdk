@@ -1,0 +1,54 @@
+{
+  "name": "@invoiceleaf/integration-sdk",
+  "version": "1.0.0",
+  "description": "SDK for building InvoiceLeaf integrations",
+  "keywords": [
+    "invoiceleaf",
+    "integration",
+    "sdk",
+    "plugin"
+  ],
+  "license": "MIT",
+  "author": "InvoiceLeaf <support@invoiceleaf.com>",
+  "homepage": "https://docs.invoiceleaf.com/integrations",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invoiceleaf/integration-sdk.git"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
