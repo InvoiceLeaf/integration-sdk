@@ -36,6 +36,9 @@ export interface TriggerDefinition {
 
   /** Output schema */
   outputSchema?: JsonSchema;
+
+  /** Whether the user can enable/disable this trigger (default: true) */
+  configurable?: boolean;
 }
 
 export type TriggerType = 'webhook' | 'event' | 'schedule' | 'user_action';

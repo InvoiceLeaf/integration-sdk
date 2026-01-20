@@ -8,42 +8,78 @@ SDK for building InvoiceLeaf integrations.
 npm install @invoiceleaf/integration-sdk
 ```
 
+## Package Structure
+
+Every integration package **must** have a `manifest.json` file at the package root. This file is the canonical source of truth for the integration's metadata, triggers, actions, and configuration schema.
+
+```
+my-integration/
+├── manifest.json        # REQUIRED - Integration manifest
+├── package.json
+├── src/
+│   ├── index.ts         # Handler exports
+│   └── handlers/        # Handler implementations
+└── README.md
+```
+
+### manifest.json
+
+The `manifest.json` file is automatically read by:
+- The **InvoiceLeaf backend** when registering/updating integrations (fetched from npm)
+- The **plugin runtime** when executing integration handlers
+
+This ensures the same manifest definition is used everywhere, keeping the backend database and runtime in sync.
+
+**Example manifest.json:**
+```json
+{
+  "id": "my-integration",
+  "name": "My Integration",
+  "version": "1.0.0",
+  "description": "A sample integration",
+  "author": {
+    "name": "Your Name",
+    "email": "you@example.com"
+  },
+  "icon": "puzzle",
+  "category": "productivity",
+  "dataAccess": ["documents", "companies"],
+  "triggers": [
+    {
+      "id": "on-document-processed",
+      "type": "event",
+      "name": "On Document Processed",
+      "events": ["document.processed"],
+      "handler": "onDocumentProcessed"
+    }
+  ],
+  "actions": [
+    {
+      "id": "sync-documents",
+      "name": "Sync Documents",
+      "handler": "syncDocuments"
+    }
+  ],
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "apiKey": {
+        "type": "string",
+        "title": "API Key"
+      }
+    },
+    "required": ["apiKey"]
+  }
+}
+```
+
 ## Quick Start
 
 ```typescript
-import {
-  defineIntegration,
-  defineHandler,
-  IntegrationContext,
-  DocumentProcessedInput,
-} from '@invoiceleaf/integration-sdk';
+// src/index.ts
+import { defineHandler, DocumentProcessedInput } from '@invoiceleaf/integration-sdk';
 
-// Define your integration manifest
-export const manifest = defineIntegration({
-  id: 'my-integration',
-  name: 'My Integration',
-  version: '1.0.0',
-  description: 'A sample integration',
-  dataAccess: ['documents', 'companies'],
-  triggers: [
-    {
-      id: 'on-document-processed',
-      name: 'On Document Processed',
-      type: 'event',
-      events: ['document.processed'],
-      handler: 'onDocumentProcessed',
-    },
-  ],
-  actions: [
-    {
-      id: 'sync-documents',
-      name: 'Sync Documents',
-      handler: 'syncDocuments',
-    },
-  ],
-});
-
-// Define handlers
+// Export handlers that match the "handler" names in manifest.json
 export const onDocumentProcessed = defineHandler<DocumentProcessedInput>(
   async (input, context) => {
     context.logger.info('Document processed', { id: input.documentId });

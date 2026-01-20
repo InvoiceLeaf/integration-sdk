@@ -3,9 +3,32 @@ import type { IntegrationContext } from '../context/IntegrationContext.js';
 /**
  * Handler function type.
  */
-export type HandlerFunction<TInput = unknown, TOutput = unknown> = (
+export type HandlerFunction<TInput = unknown, TOutput = unknown, TConfig = Record<string, unknown>> = (
   input: TInput,
-  context: IntegrationContext
+  context: IntegrationContext<TConfig>
+) => Promise<TOutput>;
+
+/**
+ * Integration handler type with config generic.
+ * Use this to type your handler functions with proper config typing.
+ *
+ * @example
+ * ```typescript
+ * interface MyConfig {
+ *   apiKey: string;
+ *   enabled: boolean;
+ * }
+ *
+ * const myHandler: IntegrationHandler<InputType, OutputType, MyConfig> = async (input, ctx) => {
+ *   const { config } = ctx;
+ *   // config is typed as MyConfig
+ *   return { success: true };
+ * };
+ * ```
+ */
+export type IntegrationHandler<TInput = unknown, TOutput = unknown, TConfig = Record<string, unknown>> = (
+  input: TInput,
+  context: IntegrationContext<TConfig>
 ) => Promise<TOutput>;
 
 /**
@@ -46,9 +69,9 @@ export type HandlerFunction<TInput = unknown, TOutput = unknown> = (
  * );
  * ```
  */
-export function defineHandler<TInput = unknown, TOutput = unknown>(
-  handler: HandlerFunction<TInput, TOutput>
-): HandlerFunction<TInput, TOutput> {
+export function defineHandler<TInput = unknown, TOutput = unknown, TConfig = Record<string, unknown>>(
+  handler: HandlerFunction<TInput, TOutput, TConfig>
+): HandlerFunction<TInput, TOutput, TConfig> {
   return handler;
 }
 

@@ -22,11 +22,20 @@ export interface IntegrationManifest {
   /** Long description (markdown supported) */
   longDescription?: string;
 
+  /** Author information */
+  author?: AuthorInfo;
+
   /** Icon URL or emoji */
   icon?: string;
 
-  /** Categories for marketplace */
+  /** Primary category for marketplace (singular) */
+  category?: IntegrationCategory | string;
+
+  /** Categories for marketplace (multiple) */
   categories?: IntegrationCategory[];
+
+  /** Tags for search */
+  tags?: string[];
 
   /** Data types this integration accesses */
   dataAccess: DataAccessType[];
@@ -49,8 +58,36 @@ export interface IntegrationManifest {
   /** User configuration schema */
   configSchema?: JsonSchema;
 
+  /** UI configuration */
+  ui?: IntegrationUI;
+
   /** Resource limits */
   limits?: ResourceLimits;
+}
+
+export interface AuthorInfo {
+  /** Author name */
+  name: string;
+  /** Author email */
+  email?: string;
+  /** Author website */
+  url?: string;
+}
+
+export interface IntegrationUI {
+  /** Configuration form layout groups */
+  configGroups?: ConfigGroup[];
+  /** Setup instructions (markdown) */
+  setupInstructions?: string;
+}
+
+export interface ConfigGroup {
+  /** Group title */
+  title: string;
+  /** Group description */
+  description?: string;
+  /** Field names in this group */
+  fields: string[];
 }
 
 export type IntegrationCategory =

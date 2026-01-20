@@ -36,3 +36,4 @@ export * from './context/index.js';
 // Helpers
 export { defineIntegration } from './helpers/defineIntegration.js';
 export { defineHandler } from './helpers/defineHandler.js';
+export type { IntegrationHandler, HandlerFunction } from './helpers/defineHandler.js';

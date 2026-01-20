@@ -1,6 +1,6 @@
 {
   "name": "@invoiceleaf/integration-sdk",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "SDK for building InvoiceLeaf integrations",
   "keywords": [
     "invoiceleaf",
@@ -13,7 +13,7 @@
   "homepage": "https://docs.invoiceleaf.com/integrations",
   "repository": {
     "type": "git",
-    "url": "https://github.com/invoiceleaf/integration-sdk.git"
+    "url": "git+https://github.com/invoiceleaf/integration-sdk.git"
   },
   "type": "module",
   "main": "./dist/index.js",

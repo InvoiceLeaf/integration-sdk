@@ -18,8 +18,23 @@ import type {
  * - External service credentials (OAuth tokens, API keys)
  * - Structured logging
  * - User-provided configuration
+ *
+ * @typeParam TConfig - The configuration type for your integration
+ *
+ * @example
+ * ```typescript
+ * interface MyConfig {
+ *   webhookUrl: string;
+ *   enabled: boolean;
+ * }
+ *
+ * async function myHandler(input: Input, ctx: IntegrationContext<MyConfig>) {
+ *   const { webhookUrl, enabled } = ctx.config;
+ *   // config is typed as MyConfig
+ * }
+ * ```
  */
-export interface IntegrationContext {
+export interface IntegrationContext<TConfig = Record<string, unknown>> {
   /** Current space ID */
   readonly spaceId: string;
 
@@ -30,7 +45,7 @@ export interface IntegrationContext {
   readonly installationId: string;
 
   /** User-provided configuration */
-  readonly config: Record<string, unknown>;
+  readonly config: TConfig;
 
   /** Data access client */
   readonly data: DataClient;

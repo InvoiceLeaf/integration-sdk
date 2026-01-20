@@ -16,6 +16,9 @@ export interface ActionDefinition {
   /** Handler function name in the module */
   handler: string;
 
+  /** Icon identifier (emoji or icon name) */
+  icon?: string;
+
   /** Input schema */
   inputSchema?: JsonSchema;
 
