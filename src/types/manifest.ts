@@ -2,6 +2,7 @@ import type { TriggerDefinition } from './triggers.js';
 import type { ActionDefinition, ExportDefinition } from './actions.js';
 import type { PageDefinition } from './ui.js';
 import type { JsonSchema } from './schema.js';
+import type { InvocationDefinition } from './invocation.js';
 
 /**
  * Integration Manifest - the main definition file for an integration.
@@ -48,6 +49,9 @@ export interface IntegrationManifest {
 
   /** Action definitions */
   actions: ActionDefinition[];
+
+  /** Optional platform invocation mappings (operation -> action) */
+  invocations?: InvocationDefinition[];
 
   /** Custom UI pages */
   pages?: PageDefinition[];

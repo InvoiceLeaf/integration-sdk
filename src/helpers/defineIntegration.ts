@@ -73,5 +73,33 @@ export function defineIntegration(manifest: IntegrationManifest): IntegrationMan
     }
   }
 
+  // Validate invocation mappings
+  const actionIds = new Set((manifest.actions || []).map((a) => a.id));
+  const invocationIds = new Set<string>();
+  for (const invocation of manifest.invocations || []) {
+    if (!invocation.id) {
+      throw new Error('Invocation must have an id');
+    }
+    if (invocationIds.has(invocation.id)) {
+      throw new Error(`Duplicate invocation id: ${invocation.id}`);
+    }
+    invocationIds.add(invocation.id);
+
+    if (!invocation.source) {
+      throw new Error(`Invocation ${invocation.id} must have a source`);
+    }
+    if (!invocation.operation) {
+      throw new Error(`Invocation ${invocation.id} must have an operation`);
+    }
+    if (!invocation.actionId) {
+      throw new Error(`Invocation ${invocation.id} must have an actionId`);
+    }
+    if (!actionIds.has(invocation.actionId)) {
+      throw new Error(
+        `Invocation ${invocation.id} references unknown actionId: ${invocation.actionId}`
+      );
+    }
+  }
+
   return manifest;
 }

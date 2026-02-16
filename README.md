@@ -180,6 +180,38 @@ Triggered by user clicks:
 }
 ```
 
+## Invocation Mappings (Optional)
+
+Invocation mappings let the platform route external interaction operations
+to internal manifest actions in a structured way.
+
+```json
+{
+  "actions": [
+    {
+      "id": "apply-document-action",
+      "name": "Apply Document Action",
+      "handler": "applyDocumentAction",
+      "internal": true
+    }
+  ],
+  "invocations": [
+    {
+      "id": "telegram-mark-paid",
+      "source": "telegram.callback",
+      "operation": "mark_paid",
+      "actionId": "apply-document-action",
+      "requiresLinkedUser": true
+    }
+  ]
+}
+```
+
+Validation rules:
+- Every invocation needs `id`, `source`, `operation`, and `actionId`
+- `actionId` must reference an existing `actions[].id`
+- Invocation IDs must be unique
+
 ## External Authentication
 
 ### OAuth2
