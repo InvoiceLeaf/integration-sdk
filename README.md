@@ -127,7 +127,11 @@ Available events:
 - `document.deleted`
 - `company.created`
 - `company.updated`
+- `company.deleted`
 - `export.completed`
+- `reminder.triggered`
+- `space.member.added`
+- `space.member.removed`
 
 ### Schedule Triggers
 

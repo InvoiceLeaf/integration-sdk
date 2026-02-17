@@ -52,6 +52,7 @@ export type EventType =
   | 'company.updated'
   | 'company.deleted'
   | 'export.completed'
+  | 'reminder.triggered'
   | 'space.member.added'
   | 'space.member.removed';
 

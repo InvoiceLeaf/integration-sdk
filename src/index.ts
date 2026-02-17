@@ -36,4 +36,17 @@ export * from './context/index.js';
 // Helpers
 export { defineIntegration } from './helpers/defineIntegration.js';
 export { defineHandler } from './helpers/defineHandler.js';
-export type { IntegrationHandler, HandlerFunction } from './helpers/defineHandler.js';
+export type {
+  IntegrationHandler,
+  HandlerFunction,
+  DocumentCreatedInput,
+  DocumentUpdatedInput,
+  DocumentProcessedInput,
+  DocumentDeletedInput,
+  CompanyCreatedInput,
+  ExportCompletedInput,
+  ReminderTriggeredInput,
+  WebhookInput,
+  ScheduleInput,
+  UserActionInput,
+} from './helpers/defineHandler.js';

@@ -135,6 +135,21 @@ export interface ExportCompletedInput {
   };
 }
 
+export interface ReminderTriggeredInput {
+  reminderId: string;
+  occurrenceId: string;
+  spaceId: string;
+  userId: string;
+  title?: string;
+  scheduledFor: number;
+  triggeredAt: number;
+  messageText: string;
+  metadata?: {
+    scheduleType?: 'one_time' | 'rrule' | string;
+    aiMode?: 'off' | 'light_rewrite' | 'tool_enabled' | string;
+  };
+}
+
 export interface WebhookInput {
   headers: Record<string, string>;
   body: unknown;
