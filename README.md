@@ -352,6 +352,8 @@ const syncEnabled = context.config.syncEnabled as boolean;
 | `config` | `Record<string, unknown>` | User configuration |
 | `data` | `DataClient` | Data access client |
 | `credentials` | `CredentialsClient` | Credential client |
+| `state` | `StateClient` | Installation-scoped state client |
+| `email` | `EmailClient` | SMTP/IMAP operations |
 | `logger` | `Logger` | Structured logger |
 
 ### DataClient
@@ -366,6 +368,7 @@ const syncEnabled = context.config.syncEnabled as boolean;
 | `listTags()` | List all tags |
 | `createExport(params)` | Create export job |
 | `getExport(id)` | Get export status |
+| `importDocument(input)` | Import file as document |
 
 ### CredentialsClient
 
@@ -374,6 +377,22 @@ const syncEnabled = context.config.syncEnabled as boolean;
 | `getAccessToken(provider)` | Get OAuth access token |
 | `getApiKey(provider)` | Get API key |
 | `refreshToken(provider)` | Force token refresh |
+
+### StateClient
+
+| Method | Description |
+|--------|-------------|
+| `get(key)` | Read installation-scoped state |
+| `set(key, value, opts?)` | Persist installation-scoped state |
+| `delete(key)` | Remove installation-scoped state |
+
+### EmailClient
+
+| Method | Description |
+|--------|-------------|
+| `sendSmtpEmail(input)` | Send outbound SMTP email |
+| `testSmtpImapConnection(input)` | Verify SMTP + IMAP connection |
+| `crawlImapPdfAttachments(input)` | Fetch PDF attachments from IMAP |
 
 ### Logger
 
