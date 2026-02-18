@@ -53,6 +53,9 @@ export interface IntegrationContext<TConfig = Record<string, unknown>> {
   /** Credential access client */
   readonly credentials: CredentialsClient;
 
+  /** External system mapping client */
+  readonly mappings: MappingsClient;
+
   /** Installation-scoped state storage client */
   readonly state: StateClient;
 
@@ -121,6 +124,11 @@ export interface DataClient {
    * Import a file as a new document.
    */
   importDocument(input: DocumentImportInput): Promise<DocumentImportResult>;
+
+  /**
+   * Patch integration sync metadata for a document.
+   */
+  patchDocumentIntegrationMeta(input: DocumentIntegrationMetaPatchInput): Promise<void>;
 }
 
 export interface DocumentImportInput {
@@ -138,16 +146,26 @@ export interface DocumentImportResult {
   duplicate: boolean;
 }
 
+export interface DocumentIntegrationMetaPatchInput {
+  documentId: string;
+  system: string;
+  externalId?: string;
+  status?: string;
+  lastSyncedAt?: string;
+  errorSummary?: string;
+  metadata?: Record<string, unknown>;
+}
+
 export interface StateClient {
   /**
    * Read installation-scoped state value by key.
    */
-  get(key: string): Promise<unknown | null>;
+  get<T = unknown>(key: string): Promise<T | null>;
 
   /**
    * Persist installation-scoped state value.
    */
-  set(key: string, value: unknown, opts?: { ttlSeconds?: number }): Promise<void>;
+  set<T = unknown>(key: string, value: T, opts?: { ttlSeconds?: number }): Promise<void>;
 
   /**
    * Delete installation-scoped state value by key.
@@ -260,6 +278,52 @@ export interface CredentialsClient {
    * Force refresh OAuth2 token.
    */
   refreshToken(provider: string): Promise<string>;
+
+  /**
+   * Get non-secret connection metadata for a provider.
+   */
+  getConnectionInfo(provider: string): Promise<CredentialConnectionInfo>;
+}
+
+export interface CredentialConnectionInfo {
+  connected: boolean;
+  provider: string;
+  credentialType?: 'oauth2' | 'api_key';
+  accountEmail?: string;
+  accountId?: string;
+  accountName?: string;
+  scopes?: string[];
+  expiresAt?: string;
+  valid?: boolean;
+  errorMessage?: string;
+}
+
+export interface MappingRecord {
+  system: string;
+  entity: string;
+  localId: string;
+  externalId: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface MappingGetInput {
+  system: string;
+  entity: string;
+  localId: string;
+}
+
+export interface MappingFindByExternalInput {
+  system: string;
+  entity: string;
+  externalId: string;
+}
+
+export interface MappingUpsertInput extends MappingRecord {}
+
+export interface MappingsClient {
+  get(input: MappingGetInput): Promise<MappingRecord | null>;
+  findByExternal(input: MappingFindByExternalInput): Promise<MappingRecord | null>;
+  upsert(input: MappingUpsertInput): Promise<void>;
 }
 
 /**

@@ -36,6 +36,8 @@ export * from './context/index.js';
 // Helpers
 export { defineIntegration } from './helpers/defineIntegration.js';
 export { defineHandler } from './helpers/defineHandler.js';
+export { createAttachmentFingerprint } from './helpers/createAttachmentFingerprint.js';
+export type { AttachmentFingerprintInput } from './helpers/createAttachmentFingerprint.js';
 export type {
   IntegrationHandler,
   HandlerFunction,

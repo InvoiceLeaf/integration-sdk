@@ -264,6 +264,35 @@ Usage in handler:
 const apiKey = await context.credentials.getApiKey('openai');
 ```
 
+## Context APIs for Sync Integrations
+
+Use these primitives for Gmail/SMTP and accounting sync integrations:
+
+```typescript
+// Durable checkpoints
+await context.state.set('sync:lastSuccessfulAt', new Date().toISOString());
+const checkpoint = await context.state.get<string>('sync:lastSuccessfulAt');
+
+// Provider diagnostics (non-secret)
+const connection = await context.credentials.getConnectionInfo('quickbooks');
+
+// External ID mappings
+await context.mappings.upsert({
+  system: 'quickbooks',
+  entity: 'invoice',
+  localId: 'doc_123',
+  externalId: 'qbo_987',
+});
+
+// Document sync metadata
+await context.data.patchDocumentIntegrationMeta({
+  documentId: 'doc_123',
+  system: 'quickbooks',
+  status: 'synced',
+  externalId: 'qbo_987',
+});
+```
+
 ## Custom UI Pages
 
 Define custom dashboard pages:
