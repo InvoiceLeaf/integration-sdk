@@ -82,6 +82,11 @@ export interface DataClient {
   getDocument(id: string): Promise<Document>;
 
   /**
+   * Get original file content for a document.
+   */
+  getDocumentFile(id: string): Promise<DocumentFileContent>;
+
+  /**
    * List companies.
    */
   listCompanies(params?: ListParams): Promise<ListResult<Company>>;
@@ -144,6 +149,14 @@ export interface DocumentImportInput {
 export interface DocumentImportResult {
   documentId: string;
   duplicate: boolean;
+}
+
+export interface DocumentFileContent {
+  documentId: string;
+  fileName?: string;
+  contentType?: string;
+  contentBase64: string;
+  sizeBytes?: number;
 }
 
 export interface DocumentIntegrationMetaPatchInput {
