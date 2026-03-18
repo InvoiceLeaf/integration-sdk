@@ -258,6 +258,7 @@ export interface Company {
   name: string;
   displayName?: string;
   taxId?: string;
+  vatId?: string;
   email?: string;
   phone?: string;
   website?: string;
