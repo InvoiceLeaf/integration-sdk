@@ -230,12 +230,18 @@ export interface PaymentMethod {
 
 export interface DocumentLineItem {
   id?: string;
-  description?: string;
+  name?: string;
+  lineIdentifier?: string;
+  itemSellerIdentifier?: string;
+  unitCode?: string;
   quantity?: number;
-  unitPrice?: number;
+  taxPercentage?: number;
+  unitAmount?: number;
   netAmount?: number;
   taxAmount?: number;
   totalAmount?: number;
+  lineDiscount?: number;
+  lineDiscountReason?: string;
 }
 
 export interface DocumentTaxItem {
