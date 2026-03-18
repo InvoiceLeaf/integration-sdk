@@ -37,8 +37,8 @@ export type IntegrationHandler<TInput = unknown, TOutput = unknown, TConfig = Re
  * @example
  * ```typescript
  * interface ExportInput {
- *   fromDate: string;
- *   toDate: string;
+ *   startDate: number;
+ *   endDate: number;
  *   format: 'csv' | 'xml';
  * }
  *
@@ -49,11 +49,11 @@ export type IntegrationHandler<TInput = unknown, TOutput = unknown, TConfig = Re
  *
  * export const exportToDATEV = defineHandler<ExportInput, ExportOutput>(
  *   async (input, context) => {
- *     context.logger.info('Starting export', { fromDate: input.fromDate });
+ *     context.logger.info('Starting export', { startDate: input.startDate });
  *
  *     const documents = await context.data.listDocuments({
- *       fromDate: input.fromDate,
- *       toDate: input.toDate,
+ *       startDate: input.startDate,
+ *       endDate: input.endDate,
  *     });
  *
  *     const exportResult = await context.data.createExport({

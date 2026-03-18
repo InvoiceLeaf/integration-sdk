@@ -321,8 +321,8 @@ export interface DocumentListParams extends ListParams {
   companyId?: string;
   categoryId?: string;
   tagIds?: string[];
-  fromDate?: string;
-  toDate?: string;
+  startDate?: number;
+  endDate?: number;
   search?: string;
 }
 
