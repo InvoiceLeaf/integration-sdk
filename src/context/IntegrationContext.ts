@@ -107,6 +107,11 @@ export interface DataClient {
   getCategory(id: string): Promise<Category>;
 
   /**
+   * Get a tag by ID.
+   */
+  getTag(id: string): Promise<Tag>;
+
+  /**
    * List all tags.
    */
   listTags(): Promise<Tag[]>;

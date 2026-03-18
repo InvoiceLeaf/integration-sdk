@@ -4,6 +4,9 @@
 export type InvocationSource =
   | 'telegram.callback'
   | 'slack.interaction'
+  | 'discord.component'
+  | 'whatsapp.interactive'
+  | 'messenger.postback'
   | 'webhook.callback';
 
 /**

@@ -182,6 +182,9 @@ export interface Document {
   /** Tax determination status */
   taxDeterminationStatus?: string;
 
+  /** Tax determination trace */
+  taxDeterminationTrace?: string;
+
   // === Related Items ===
 
   /** Line items */
@@ -189,6 +192,9 @@ export interface Document {
 
   /** Tax breakdown items */
   taxItems?: DocumentTaxItem[];
+
+  /** Barcodes detected on the document */
+  barcodes?: DocumentBarcode[];
 
   /** Display name (computed) */
   displayName?: string;
@@ -250,6 +256,12 @@ export interface DocumentTaxItem {
   taxableAmount?: number;
   taxAmount?: number;
   taxCategoryCode?: string;
+}
+
+export interface DocumentBarcode {
+  code?: number;
+  type?: string;
+  rawCode?: string;
 }
 
 export interface Company {
