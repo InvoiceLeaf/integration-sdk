@@ -41,7 +41,8 @@ export interface TriggerDefinition {
   configurable?: boolean;
 }
 
-export type TriggerType = 'webhook' | 'event' | 'schedule' | 'user_action';
+export const TRIGGER_TYPES = ['webhook', 'event', 'schedule', 'user_action'] as const;
+export type TriggerType = (typeof TRIGGER_TYPES)[number];
 
 export type EventType =
   | 'document.created'

@@ -69,6 +69,13 @@ export interface IntegrationContext<TConfig = Record<string, unknown>> {
 /**
  * Client for accessing InvoiceLeaf data.
  * All operations are scoped to the current space.
+ *
+ * **Error handling contract:** All methods throw on failure (network errors,
+ * API errors, invalid requests). Methods that semantically return "not found"
+ * (e.g. {@link StateClient.get}, {@link MappingsClient.get}) return `null`
+ * on success when no record exists — they only throw on transport/server errors.
+ * Plugins should use try/catch for operations where graceful degradation is
+ * preferred over hard failure (e.g. checkpoint reads, deduplication checks).
  */
 export interface DataClient {
   /**
@@ -177,6 +184,7 @@ export interface DocumentIntegrationMetaPatchInput {
 export interface StateClient {
   /**
    * Read installation-scoped state value by key.
+   * Returns `null` when the key does not exist. Throws on transport/server errors.
    */
   get<T = unknown>(key: string): Promise<T | null>;
 
@@ -238,6 +246,8 @@ export interface SmtpImapConnectionTestInput {
 export interface SmtpImapConnectionTestResult {
   smtp: boolean;
   imap: boolean;
+  smtpError?: string;
+  imapError?: string;
 }
 
 export interface ImapPdfAttachment {
@@ -339,7 +349,9 @@ export interface MappingFindByExternalInput {
 export interface MappingUpsertInput extends MappingRecord {}
 
 export interface MappingsClient {
+  /** Returns `null` when no mapping exists. Throws on transport/server errors. */
   get(input: MappingGetInput): Promise<MappingRecord | null>;
+  /** Returns `null` when no mapping exists. Throws on transport/server errors. */
   findByExternal(input: MappingFindByExternalInput): Promise<MappingRecord | null>;
   upsert(input: MappingUpsertInput): Promise<void>;
 }

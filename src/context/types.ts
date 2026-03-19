@@ -241,10 +241,15 @@ export interface DocumentLineItem {
   itemSellerIdentifier?: string;
   unitCode?: string;
   quantity?: number;
+  /** Tax rate as a percentage in range 0–100 (e.g. 19 for 19% VAT) */
   taxPercentage?: number;
+  /** Price per unit (before tax) */
   unitAmount?: number;
+  /** Line net amount before tax: quantity * unitAmount */
   netAmount?: number;
+  /** Tax amount for this line: netAmount * (taxPercentage / 100) */
   taxAmount?: number;
+  /** Line total including tax: netAmount + taxAmount */
   totalAmount?: number;
   lineDiscount?: number;
   lineDiscountReason?: string;
@@ -252,14 +257,22 @@ export interface DocumentLineItem {
 
 export interface DocumentTaxItem {
   id?: string;
-  taxRate?: number;
-  taxableAmount?: number;
+  /** Display name of the tax (e.g. "VAT", "GST 10%") */
+  name?: string;
+  /** Tax rate as a percentage in range 0–100 (e.g. 19 for 19% VAT) */
+  taxPercentage?: number;
+  /** Taxable base amount before tax (i.e. the net/subtotal this tax applies to) */
+  netAmount?: number;
+  /** Computed tax amount: netAmount * (taxPercentage / 100) */
   taxAmount?: number;
+  /** Total tax collected across all line items for this tax rate (may differ from taxAmount for multi-line documents) */
+  totalTax?: number;
+  /** Tax category code (e.g. "S" for standard, "Z" for zero-rated, "E" for exempt) */
   taxCategoryCode?: string;
 }
 
 export interface DocumentBarcode {
-  code?: number;
+  code?: string;
   type?: string;
   rawCode?: string;
 }
@@ -274,18 +287,16 @@ export interface Company {
   email?: string;
   phone?: string;
   website?: string;
-  address?: Address;
+  country?: string;
+  countryIso?: string;
+  street?: string;
+  addressLine2?: string;
+  state?: string;
+  zip?: string;
+  city?: string;
   metadata?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Address {
-  street?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  country?: string;
 }
 
 export interface Category {

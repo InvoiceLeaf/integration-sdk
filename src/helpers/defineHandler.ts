@@ -115,6 +115,18 @@ export interface DocumentDeletedInput {
   documentId: string;
 }
 
+/**
+ * Generic document event input for sync-on-event handlers.
+ * Supports both direct invocation (`documentId` at top level)
+ * and event payload shape (`document.id` nested).
+ */
+export interface DocumentEventInput {
+  documentId?: string;
+  document?: {
+    id?: string;
+  };
+}
+
 export interface CompanyCreatedInput {
   companyId: string;
   company: {

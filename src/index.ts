@@ -45,6 +45,7 @@ export type {
   DocumentUpdatedInput,
   DocumentProcessedInput,
   DocumentDeletedInput,
+  DocumentEventInput,
   CompanyCreatedInput,
   ExportCompletedInput,
   ReminderTriggeredInput,
