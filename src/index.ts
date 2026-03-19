@@ -37,6 +37,7 @@ export * from './context/index.js';
 export { defineIntegration } from './helpers/defineIntegration.js';
 export { defineHandler } from './helpers/defineHandler.js';
 export { createAttachmentFingerprint } from './helpers/createAttachmentFingerprint.js';
+export { firstFinite } from './helpers/firstFinite.js';
 export type { AttachmentFingerprintInput } from './helpers/createAttachmentFingerprint.js';
 export type {
   IntegrationHandler,
