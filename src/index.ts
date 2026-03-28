@@ -32,14 +32,62 @@ export * from './types/index.js';
 
 // Context
 export * from './context/index.js';
+export type {
+  // Email types
+  EmailClient,
+  EmailAttachmentInput,
+  SendSmtpEmailInput,
+  SendSmtpEmailResult,
+  SmtpImapConnectionTestInput,
+  SmtpImapConnectionTestResult,
+  ImapPdfAttachment,
+  CrawlImapPdfAttachmentsInput,
+  CrawlImapPdfAttachmentsResult,
+  // Credential types
+  CredentialsClient,
+  CredentialConnectionInfo,
+  // Mapping types
+  MappingsClient,
+  MappingRecord,
+  MappingGetInput,
+  MappingFindByExternalInput,
+  MappingUpsertInput,
+  // State types
+  StateClient,
+  // Data types
+  DataClient,
+  DocumentImportInput,
+  DocumentImportResult,
+  DocumentFileContent,
+  DocumentIntegrationMetaPatchInput,
+  // Logger
+  Logger,
+} from './context/IntegrationContext.js';
 
 // Helpers
 export { defineIntegration } from './helpers/defineIntegration.js';
 export { defineHandler } from './helpers/defineHandler.js';
 export { createAttachmentFingerprint } from './helpers/createAttachmentFingerprint.js';
 export { firstFinite } from './helpers/firstFinite.js';
+export { toBoundedInt } from './helpers/toBoundedInt.js';
+export { trimToUndefined } from './helpers/trimToUndefined.js';
+export { toErrorMessage } from './helpers/toErrorMessage.js';
+export { toFiniteNumber } from './helpers/toFiniteNumber.js';
+export { toDateOnly, toDateOnlyFromTimestamp } from './helpers/toDateOnly.js';
+export {
+  requestWithRetry,
+  requestResponseWithRetry,
+  backoffMs,
+  sleep,
+  RETRYABLE_STATUSES,
+  SAFE_RETRY_STATUSES_FOR_MUTATING,
+  DEFAULT_MAX_REQUEST_ATTEMPTS,
+  DEFAULT_REQUEST_TIMEOUT_MS,
+} from './helpers/httpRetry.js';
+export type { RequestWithRetryOptions } from './helpers/httpRetry.js';
 export type { AttachmentFingerprintInput } from './helpers/createAttachmentFingerprint.js';
 export type {
+  HandlerResult,
   IntegrationHandler,
   HandlerFunction,
   DocumentCreatedInput,
@@ -48,8 +96,18 @@ export type {
   DocumentDeletedInput,
   DocumentEventInput,
   CompanyCreatedInput,
+  CompanyUpdatedInput,
+  CompanyDeletedInput,
+  TagCreatedInput,
+  TagUpdatedInput,
+  TagDeletedInput,
+  CategoryCreatedInput,
+  CategoryUpdatedInput,
+  CategoryDeletedInput,
   ExportCompletedInput,
   ReminderTriggeredInput,
+  SpaceMemberAddedInput,
+  SpaceMemberRemovedInput,
   WebhookInput,
   ScheduleInput,
   UserActionInput,

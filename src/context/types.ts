@@ -20,6 +20,9 @@ export interface Document {
   /** Tags associated with the document */
   tags?: Tag[];
 
+  /** Space member who owns/uploaded the document */
+  member?: DocumentMember;
+
   /** Description/notes */
   description?: string;
 
@@ -147,6 +150,9 @@ export interface Document {
 
   // === Payment Tracking ===
 
+  /** Processing/activity log */
+  log?: string;
+
   /** Payment date (ISO string) */
   paymentDate?: string;
 
@@ -158,6 +164,9 @@ export interface Document {
 
   /** Invoice series ID */
   invoiceSeriesId?: string;
+
+  /** Template ID used for generating this document */
+  templateId?: string;
 
   // === Tax Fields ===
 
@@ -196,6 +205,12 @@ export interface Document {
   /** Barcodes detected on the document */
   barcodes?: DocumentBarcode[];
 
+  /** ID of the next document in sequence */
+  next?: string;
+
+  /** ID of the previous document in sequence */
+  previous?: string;
+
   /** Display name (computed) */
   displayName?: string;
 }
@@ -227,6 +242,8 @@ export interface Currency {
   code: string;
   symbol?: string;
   name?: string;
+  /** Number of decimal places (ISO 4217 minor units, e.g. 2 for EUR, 0 for JPY) */
+  minorUnits?: number;
 }
 
 export interface PaymentMethod {
@@ -267,26 +284,46 @@ export interface DocumentTaxItem {
   taxAmount?: number;
   /** Total tax collected across all line items for this tax rate (may differ from taxAmount for multi-line documents) */
   totalTax?: number;
-  /** Tax category code (e.g. "S" for standard, "Z" for zero-rated, "E" for exempt) */
-  taxCategoryCode?: string;
+  /** Tax role in accounting (e.g. "INVOICE_TAX", "SELF_ASSESSED_PAYABLE", "SELF_ASSESSED_RECOVERABLE", "IMPORT_TAX", "USE_TAX", "WITHHOLDING") */
+  taxRole?: string;
+  /** Reference to the tax jurisdiction/registration this tax applies to */
+  taxJurisdictionId?: string;
+  /** Source of the tax rate (e.g. "MANUAL", "PROVIDER", "RULESET", "AUTHORITY", "DOCUMENT", "UNKNOWN") */
+  rateSource?: string;
 }
 
 export interface DocumentBarcode {
+  /** Barcode category identifier for internal classification */
   code?: string;
   type?: string;
   rawCode?: string;
 }
 
+export interface DocumentMember {
+  uid?: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  imageUrl?: string;
+  deleted?: boolean;
+  /** Computed display name */
+  displayName?: string;
+  /** Computed initials */
+  initials?: string;
+}
+
 export interface Company {
   id: string;
-  spaceId: string;
+  space?: { id: string };
+  userId?: string;
+  deleted?: boolean;
+  lastUpdate: number;
+  created: number;
+
   name: string;
   displayName?: string;
-  taxId?: string;
-  vatId?: string;
-  email?: string;
-  phone?: string;
-  website?: string;
+
+  // Address fields (BG-5/BG-8)
   country?: string;
   countryIso?: string;
   street?: string;
@@ -294,9 +331,36 @@ export interface Company {
   state?: string;
   zip?: string;
   city?: string;
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
+
+  // Contact fields (BG-6/BG-9)
+  contactPerson?: string;
+  email?: string;
+  phone?: string;
+  fax?: string;
+
+  // Tax/Business identifiers
+  taxNumber?: string;
+  vatId?: string;
+  commercialRegister?: string;
+
+  // Electronic address (BT-34/BT-49)
+  electronicAddress?: string;
+  electronicAddressScheme?: string;
+
+  // Banking details
+  iban?: string;
+  bic?: string;
+
+  // Other
+  url?: string;
+  icon?: string;
+
+  // Billing
+  billingAddress?: boolean;
+
+  // Statistics
+  supplier?: number;
+  receiver?: number;
 }
 
 export interface Category {
@@ -305,7 +369,7 @@ export interface Category {
   name: string;
   color?: string;
   icon?: string;
-  parentId?: string;
+  parentId?: string | null;
   documentCount?: number;
   createdAt: string;
   updatedAt: string;
@@ -316,7 +380,6 @@ export interface Tag {
   spaceId: string;
   name: string;
   color?: string;
-  documentCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -341,9 +404,12 @@ export interface ListParams {
   /** Filter by specific IDs */
   ids?: string[];
   page?: number;
-  size?: number;
+  /** Items per page (backend parameter name) */
+  limit?: number;
   sortBy?: string;
   sortDirection?: 'asc' | 'desc';
+  /** Search/filter query (e.g. company name search) */
+  query?: string;
 }
 
 export interface DocumentListParams extends ListParams {
@@ -360,6 +426,6 @@ export interface ListResult<T> {
   items: T[];
   total: number;
   page: number;
-  size: number;
+  limit: number;
   hasMore: boolean;
 }

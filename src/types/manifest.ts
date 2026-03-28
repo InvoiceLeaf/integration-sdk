@@ -26,8 +26,11 @@ export interface IntegrationManifest {
   /** Author information */
   author?: AuthorInfo;
 
-  /** Icon URL or emoji */
+  /** Icon name (generic, e.g. "mail", "book") */
   icon?: string;
+
+  /** URL to the integration's brand icon (used in marketplace and installation UIs) */
+  iconUrl?: string;
 
   /** Primary category for marketplace (singular) */
   category?: IntegrationCategory | string;
@@ -112,7 +115,8 @@ export type DataAccessType =
   | 'categories'
   | 'tags'
   | 'exports'
-  | 'spaces';
+  | 'spaces'
+  | 'payment_methods';
 
 export interface ExternalAuthConfig {
   /** Provider identifier */

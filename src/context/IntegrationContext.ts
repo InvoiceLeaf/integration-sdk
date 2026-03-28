@@ -44,8 +44,14 @@ export interface IntegrationContext<TConfig = Record<string, unknown>> {
   /** Installation ID */
   readonly installationId: string;
 
-  /** User-provided configuration */
-  readonly config: TConfig;
+  /**
+   * User-provided configuration.
+   *
+   * This is typed as `Partial<TConfig>` because the installation may not have
+   * all configuration fields populated. Always check for the presence of
+   * required fields before using them.
+   */
+  readonly config: Partial<TConfig>;
 
   /** Data access client */
   readonly data: DataClient;
@@ -130,6 +136,12 @@ export interface DataClient {
     format: string;
     documentIds?: string[];
     filters?: DocumentListParams;
+    /** Output filename (without extension) */
+    filename?: string;
+    /** Currency code for the export (e.g. "EUR", "USD") */
+    currency?: string;
+    /** Report type identifier */
+    report?: number;
   }): Promise<Export>;
 
   /**
@@ -155,7 +167,9 @@ export interface DocumentImportInput {
   source: string;
   description?: string;
   externalRef?: string;
-  metadata?: Record<string, unknown>;
+  categoryId?: string;
+  tagIds?: string[];
+  dedupeTtlSeconds?: number;
 }
 
 export interface DocumentImportResult {
@@ -206,12 +220,7 @@ export interface EmailAttachmentInput {
 }
 
 export interface SendSmtpEmailInput {
-  smtpHost: string;
-  smtpPort: number;
-  smtpSecure?: boolean;
-  smtpUsername: string;
-  smtpPassword: string;
-  fromAddress: string;
+  fromAddress?: string;
   to: string[];
   cc?: string[];
   bcc?: string[];
@@ -230,16 +239,6 @@ export interface SendSmtpEmailResult {
 }
 
 export interface SmtpImapConnectionTestInput {
-  smtpHost: string;
-  smtpPort: number;
-  smtpSecure?: boolean;
-  smtpUsername: string;
-  smtpPassword: string;
-  imapHost: string;
-  imapPort: number;
-  imapSecure?: boolean;
-  imapUsername: string;
-  imapPassword: string;
   imapFolder?: string;
 }
 
@@ -262,11 +261,6 @@ export interface ImapPdfAttachment {
 }
 
 export interface CrawlImapPdfAttachmentsInput {
-  imapHost: string;
-  imapPort: number;
-  imapSecure?: boolean;
-  imapUsername: string;
-  imapPassword: string;
   imapFolder?: string;
   searchFilter?: string;
   maxMessagesPerRun?: number;
