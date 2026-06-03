@@ -68,6 +68,15 @@ export interface IntegrationContext<TConfig = Record<string, unknown>> {
   /** Email transport and mailbox operations */
   readonly email: EmailClient;
 
+  /**
+   * Privileged tax-filing capability (validate / submit via the host).
+   *
+   * Only present for verified integrations that have been granted the `filing`
+   * capability; enforcement is server-side. Plugins must guard usage with a
+   * presence check (`if (context.filing) { ... }`).
+   */
+  readonly filing?: FilingClient;
+
   /** Structured logger */
   readonly logger: Logger;
 }
@@ -318,6 +327,64 @@ export interface CredentialConnectionInfo {
   expiresAt?: string;
   valid?: boolean;
   errorMessage?: string;
+}
+
+/**
+ * Privileged client for tax filing (e.g. ELSTER via the native ERiC service).
+ *
+ * Granted only to verified integrations with the `filing` capability. The
+ * sandbox builds and passes the transfer XML; certificate bytes and PIN never
+ * enter the isolate — the plugin references the customer's certificate by a
+ * stable handle and the host performs the native call.
+ */
+export interface FilingClient {
+  /**
+   * Validate a built transfer XML against the filing schema without sending it.
+   * Runs in test mode by default.
+   */
+  validate(input: FilingValidateInput): Promise<FilingValidateResult>;
+
+  /**
+   * Submit a built transfer XML to the tax authority using the customer's
+   * stored certificate (referenced by handle). Irreversible in production mode.
+   */
+  submit(input: FilingSubmitInput): Promise<FilingSubmitResult>;
+}
+
+export interface FilingValidateInput {
+  /** The built transfer-package XML (Nutzdaten + envelope). */
+  xml: string;
+  /** Form type, e.g. "ustva" or "euer". */
+  formType: string;
+  /** Tax period (e.g. "2026-01") or year, depending on the form. */
+  period?: string;
+  /** When true (default), validate against the test path / test Finanzamt. */
+  testMode?: boolean;
+}
+
+export interface FilingValidateResult {
+  ok: boolean;
+  errors?: string[];
+}
+
+export interface FilingSubmitInput {
+  /** The built transfer-package XML (Nutzdaten + envelope). */
+  xml: string;
+  /** Form type, e.g. "ustva" or "euer". */
+  formType: string;
+  /** Tax period (e.g. "2026-01") or year, depending on the form. */
+  period?: string;
+  /** Stable handle referencing the customer's stored certificate. */
+  certHandle: string;
+  /** When true, route to the test path instead of a real submission. */
+  testMode?: boolean;
+}
+
+export interface FilingSubmitResult {
+  transferTicket: string;
+  /** GCS reference to the stored receipt PDF, if available. */
+  receiptFileSource?: string;
+  serverResponse?: string;
 }
 
 export interface MappingRecord {

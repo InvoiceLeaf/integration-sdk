@@ -53,6 +53,9 @@ export interface ExportDefinition {
 
   /** MIME type */
   mimeType?: string;
+
+  /** Input schema for a per-export parameter form */
+  inputSchema?: JsonSchema;
 }
 
 export type ExportFormat = 'csv' | 'xml' | 'json' | 'pdf' | 'xlsx' | 'custom';

@@ -46,6 +46,12 @@ export type {
   // Credential types
   CredentialsClient,
   CredentialConnectionInfo,
+  // Filing types
+  FilingClient,
+  FilingValidateInput,
+  FilingValidateResult,
+  FilingSubmitInput,
+  FilingSubmitResult,
   // Mapping types
   MappingsClient,
   MappingRecord,
