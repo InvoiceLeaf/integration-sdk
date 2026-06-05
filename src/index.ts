@@ -52,6 +52,7 @@ export type {
   FilingValidateResult,
   FilingSubmitInput,
   FilingSubmitResult,
+  FilingRecord,
   // Mapping types
   MappingsClient,
   MappingRecord,

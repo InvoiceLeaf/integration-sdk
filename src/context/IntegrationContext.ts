@@ -349,6 +349,11 @@ export interface FilingClient {
    * stored certificate (referenced by handle). Irreversible in production mode.
    */
   submit(input: FilingSubmitInput): Promise<FilingSubmitResult>;
+
+  /**
+   * List the filings this installation has produced (read-only filing history).
+   */
+  list(): Promise<FilingRecord[]>;
 }
 
 export interface FilingValidateInput {
@@ -385,6 +390,22 @@ export interface FilingSubmitResult {
   /** GCS reference to the stored receipt PDF, if available. */
   receiptFileSource?: string;
   serverResponse?: string;
+}
+
+/** A persisted filing record (filing history). */
+export interface FilingRecord {
+  filingId: string;
+  formType: string;
+  period?: string;
+  year?: number;
+  /** "test" or "production". */
+  mode: string;
+  /** BUILT | VALIDATED | SUBMITTED | ACCEPTED | REJECTED | ERROR. */
+  state: string;
+  transferTicket?: string;
+  receiptFileSource?: string;
+  /** Creation time (epoch millis). */
+  created: number;
 }
 
 export interface MappingRecord {
