@@ -351,6 +351,21 @@ export interface FilingClient {
   submit(input: FilingSubmitInput): Promise<FilingSubmitResult>;
 
   /**
+   * Open a filing whose transport runs inside this sandbox rather than host side
+   * (FinanzOnline, where the SOAP client is bundled with the plugin).
+   *
+   * The host verifies that the period was approved for these figures and that it
+   * has not been filed already, then opens the audit record. **Do not transmit if
+   * this call rejects.** Pair every successful call with {@link completeExternal}.
+   */
+  beginExternal(input: FilingBeginExternalInput): Promise<FilingBeginExternalResult>;
+
+  /**
+   * Record the outcome of a filing opened with {@link beginExternal}. Idempotent.
+   */
+  completeExternal(input: FilingCompleteExternalInput): Promise<FilingSubmitResult>;
+
+  /**
    * List the filings this installation has produced (read-only filing history).
    */
   list(): Promise<FilingRecord[]>;
@@ -383,12 +398,56 @@ export interface FilingSubmitInput {
   certHandle: string;
   /** When true, route to the test path instead of a real submission. */
   testMode?: boolean;
+  /**
+   * Single-use approval token minted by the host when the figures were approved.
+   * Required for a real submission; the host rejects the call without it.
+   */
+  confirmToken?: string;
+  /** Hash of the approved figures, re-checked host side against the approval. */
+  figuresHash?: string;
 }
 
 export interface FilingSubmitResult {
   transferTicket: string;
   /** GCS reference to the stored receipt PDF, if available. */
   receiptFileSource?: string;
+  serverResponse?: string;
+  /** The persisted filing record this submission produced. */
+  filingId?: string;
+  /** Lifecycle state the filing reached. */
+  state?: string;
+}
+
+export interface FilingBeginExternalInput {
+  /** Form type, e.g. "u30" or "zm". */
+  formType: string;
+  /** Tax period, e.g. "2026-01" or "2026-Q1". */
+  period: string;
+  /** When true (default), the transmission is non-binding and no approval is needed. */
+  testMode?: boolean;
+  /** Single-use approval token; required when `testMode` is false. */
+  confirmToken?: string;
+  /** Hash of the approved figures, re-checked host side against the approval. */
+  figuresHash?: string;
+}
+
+export interface FilingBeginExternalResult {
+  /** Pass this back to `completeExternal` once the transmission finishes. */
+  filingId: string;
+  state: string;
+  ok: boolean;
+}
+
+export interface FilingCompleteExternalInput {
+  /** The id returned by `beginExternal`. */
+  filingId: string;
+  /** Whether the authority accepted the transmission. */
+  success: boolean;
+  /** Transfer ticket or message reference the authority returned. */
+  transferTicket?: string;
+  /** Authority errors on a rejection. */
+  errors?: string[];
+  /** Raw response for the audit trail. */
   serverResponse?: string;
 }
 

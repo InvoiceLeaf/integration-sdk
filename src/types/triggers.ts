@@ -61,7 +61,11 @@ export type EventType =
   | 'export.completed'
   | 'reminder.triggered'
   | 'space.member.added'
-  | 'space.member.removed';
+  | 'space.member.removed'
+  | 'tax.filing.blocked'
+  | 'tax.filing.approval_required'
+  | 'tax.filing.filed'
+  | 'tax.filing.rejected';
 
 export interface WebhookConfig {
   /** Path for the webhook endpoint */
