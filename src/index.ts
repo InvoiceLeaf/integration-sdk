@@ -61,10 +61,23 @@ export type {
   MappingUpsertInput,
   // State types
   StateClient,
+  // Payment types
+  PaymentsClient,
+  PaymentListParams,
+  PaymentRecord,
+  PaymentListResult,
+  PaymentAllocationInput,
+  PaymentCreateInput,
+  PaymentCreateResult,
   // Data types
   DataClient,
   DocumentImportInput,
   DocumentImportResult,
+  StructuredDocumentCreateInput,
+  StructuredLineItemInput,
+  StructuredTaxItemInput,
+  CompanyCreateInput,
+  CompanyCreateResult,
   DocumentFileContent,
   DocumentIntegrationMetaPatchInput,
   // Logger

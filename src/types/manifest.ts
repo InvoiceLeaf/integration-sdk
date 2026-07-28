@@ -123,7 +123,8 @@ export type DataAccessType =
   | 'tags'
   | 'exports'
   | 'spaces'
-  | 'payment_methods';
+  | 'payment_methods'
+  | 'payments';
 
 export interface ExternalAuthConfig {
   /** Provider identifier */

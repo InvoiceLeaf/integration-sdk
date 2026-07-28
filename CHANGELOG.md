@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-07-28
+
+### Added
+
+- New `context.payments` client (`PaymentsClient`) with `list` and `create`. `create` records a payment in the space's accounting model, supports inline document allocations (allocated documents become PARTIAL/PAID automatically), and is idempotent via `externalRef`. Requires the new `payments` dataAccess scope.
+- New `payments` value in `DataAccessType`.
+- New exported types: `PaymentsClient`, `PaymentListParams`, `PaymentRecord`, `PaymentListResult`, `PaymentAllocationInput`, `PaymentCreateInput`, `PaymentCreateResult`.
+- New `data.createStructuredDocument`: creates a document with structured data (line items, tax items, amounts, parties) that skips the OCR/AI processing pipeline; an original file can optionally be attached as-is. Shares the `externalRef` dedupe namespace with `importDocument`.
+- New `data.createCompany` for resolving external customers/vendors to InvoiceLeaf companies.
+- The plugin runtime `fetch` now supports `{responseType: 'base64'}` to download binary content (e.g. PDFs) intact across the isolate boundary.
+
+### Fixed
+
+- `createAttachmentFingerprint` now uses a pure-JS SHA-256 instead of `node:crypto`, so importing SDK helper values no longer breaks the runtime's neutral-platform plugin bundling. Output is unchanged (verified against `node:crypto`).
+- `exports` map gained a `default` condition so the package resolves under CJS/require-based tooling (the plugin runtime aliases plugin SDK imports to its own copy at bundle time).
+
 ## [2.0.0] - 2026-03-22
 
 ### Breaking Changes

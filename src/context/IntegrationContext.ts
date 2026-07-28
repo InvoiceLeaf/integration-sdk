@@ -62,6 +62,12 @@ export interface IntegrationContext<TConfig = Record<string, unknown>> {
   /** External system mapping client */
   readonly mappings: MappingsClient;
 
+  /**
+   * Payment access client (list payments, record payments with document
+   * allocations). Requires the `payments` dataAccess scope.
+   */
+  readonly payments: PaymentsClient;
+
   /** Installation-scoped state storage client */
   readonly state: StateClient;
 
@@ -160,8 +166,28 @@ export interface DataClient {
 
   /**
    * Import a file as a new document.
+   *
+   * The file runs through InvoiceLeaf's normal OCR/AI processing pipeline.
+   * For invoices whose structured data is already known from the external
+   * API, prefer {@link createStructuredDocument}.
    */
   importDocument(input: DocumentImportInput): Promise<DocumentImportResult>;
+
+  /**
+   * Create a fully structured document (line items, amounts, parties already
+   * known) that skips the OCR/AI processing pipeline entirely. An original
+   * file (e.g. the provider's PDF) can optionally be attached as-is.
+   *
+   * Deduplicates against previous structured creates AND file imports via
+   * `externalRef` (shared namespace).
+   */
+  createStructuredDocument(input: StructuredDocumentCreateInput): Promise<DocumentImportResult>;
+
+  /**
+   * Create a company in the space. Used to resolve external customers or
+   * vendors to InvoiceLeaf companies before creating structured documents.
+   */
+  createCompany(input: CompanyCreateInput): Promise<CompanyCreateResult>;
 
   /**
    * Patch integration sync metadata for a document.
@@ -186,6 +212,82 @@ export interface DocumentImportResult {
   duplicate: boolean;
 }
 
+export interface StructuredLineItemInput {
+  name?: string;
+  quantity?: string | number;
+  unitCode?: string;
+  unitAmount?: string | number;
+  /** Tax rate percentage in range 0-100. */
+  taxPercentage?: string | number;
+  netAmount?: string | number;
+  taxAmount?: string | number;
+  totalAmount?: string | number;
+}
+
+export interface StructuredTaxItemInput {
+  name?: string;
+  /** Tax rate percentage in range 0-100. */
+  taxPercentage?: string | number;
+  netAmount?: string | number;
+  taxAmount?: string | number;
+}
+
+export interface StructuredDocumentCreateInput {
+  /** Integration source slug, e.g. "stripe". */
+  source: string;
+  /** Stable provider-side reference used for server-side deduplication. */
+  externalRef?: string;
+  dedupeTtlSeconds?: number;
+  description?: string;
+  categoryId?: string;
+  tagIds?: string[];
+  /** Invoice number. */
+  invoiceId?: string;
+  /** ISO date. */
+  invoiceDate?: string;
+  /** ISO date. */
+  dueDate?: string;
+  /** Currency code, e.g. "EUR". */
+  currency?: string;
+  /** RECEIVABLE | PAYABLE | UNKNOWN. */
+  accountingType?: string;
+  documentStatus?: string;
+  supplierId?: string;
+  receiverId?: string;
+  netAmount?: string | number;
+  taxAmount?: string | number;
+  totalAmount?: string | number;
+  amountDue?: string | number;
+  lineItems?: StructuredLineItemInput[];
+  taxItems?: StructuredTaxItemInput[];
+  /** Optional original file to store as-is (no processing). */
+  fileName?: string;
+  contentType?: string;
+  contentBase64?: string;
+}
+
+export interface CompanyCreateInput {
+  name: string;
+  displayName?: string;
+  email?: string;
+  phone?: string;
+  url?: string;
+  street?: string;
+  addressLine2?: string;
+  zip?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  countryIso?: string;
+  vatId?: string;
+  taxNumber?: string;
+}
+
+export interface CompanyCreateResult {
+  companyId: string;
+  name: string;
+}
+
 export interface DocumentFileContent {
   documentId: string;
   fileName?: string;
@@ -202,6 +304,115 @@ export interface DocumentIntegrationMetaPatchInput {
   lastSyncedAt?: string;
   errorSummary?: string;
   metadata?: Record<string, unknown>;
+}
+
+/**
+ * Client for reading and recording payments.
+ *
+ * Payments created here land in the space's accounting model: a payment with
+ * allocations marks the allocated documents as PARTIAL/PAID automatically,
+ * while a payment without allocations is created UNMATCHED for the user to
+ * reconcile manually.
+ *
+ * Requires the `payments` dataAccess scope in the manifest.
+ */
+export interface PaymentsClient {
+  /**
+   * List payments in the space.
+   */
+  list(params?: PaymentListParams): Promise<PaymentListResult>;
+
+  /**
+   * Record a payment, optionally allocating it to documents in the same call.
+   *
+   * Pass a stable `externalRef` (e.g. `stripe:charge:ch_123`) to make the call
+   * idempotent: retries return the previously created payment with
+   * `duplicate: true` instead of creating a second one.
+   */
+  create(input: PaymentCreateInput): Promise<PaymentCreateResult>;
+}
+
+export interface PaymentListParams {
+  /** Filter by company. */
+  companyId?: string;
+  /** Start date (ISO date, inclusive). */
+  startDate?: string;
+  /** End date (ISO date, inclusive). */
+  endDate?: string;
+  /** Filter by payment status (UNMATCHED | MATCHED | POSTED). */
+  statuses?: string[];
+  /** Filter by currency code. */
+  currency?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaymentRecord {
+  id: string;
+  companyId?: string;
+  /** ISO date. */
+  paymentDate?: string;
+  /** Decimal amount serialized as string to preserve precision. */
+  amount?: string | number;
+  currency?: string;
+  paymentMethodId?: string;
+  reference?: string;
+  bankAccount?: string;
+  /** UNMATCHED | MATCHED | POSTED. */
+  status?: string;
+  /** INCOMING | OUTGOING. */
+  direction?: string;
+  notes?: string;
+}
+
+export interface PaymentListResult {
+  items: PaymentRecord[];
+  page: number;
+  limit: number;
+  hasMore: boolean;
+  totalAmount?: string | number;
+  totalAllocated?: string | number;
+  totalUnallocated?: string | number;
+}
+
+export interface PaymentAllocationInput {
+  /** InvoiceLeaf document to allocate against. */
+  documentId: string;
+  /** Positive decimal amount; pass a string to preserve precision. */
+  amount: string | number;
+}
+
+export interface PaymentCreateInput {
+  /** ISO date the payment was made. */
+  paymentDate: string;
+  /** Positive decimal amount; pass a string to preserve precision. */
+  amount: string | number;
+  /** Currency code, e.g. "EUR". */
+  currency: string;
+  /** INCOMING (default) or OUTGOING. */
+  direction?: string;
+  companyId?: string;
+  paymentMethodId?: string;
+  /** Human-readable payment reference (e.g. provider transaction id). */
+  reference?: string;
+  bankAccount?: string;
+  notes?: string;
+  /** Stable provider-side reference used for server-side deduplication. */
+  externalRef?: string;
+  /** TTL for the dedupe marker; defaults to 90 days. */
+  dedupeTtlSeconds?: number;
+  /** Documents to allocate this payment against. Sum must not exceed amount. */
+  allocations?: PaymentAllocationInput[];
+}
+
+export interface PaymentCreateResult {
+  paymentId: string;
+  /** True when externalRef matched a previously recorded payment. */
+  duplicate: boolean;
+  /** Payment status after creation/allocation (UNMATCHED | MATCHED). */
+  status?: string;
+  /** Set when the payment was created but allocation failed. */
+  allocationError?: string;
 }
 
 export interface StateClient {
