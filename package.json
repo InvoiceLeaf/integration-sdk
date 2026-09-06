@@ -10,10 +10,13 @@
   ],
   "license": "MIT",
   "author": "InvoiceLeaf <support@invoiceleaf.com>",
-  "homepage": "https://docs.invoiceleaf.com/integrations",
+  "homepage": "https://invoiceleaf.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/invoiceleaf/integration-sdk.git"
+    "url": "git+https://github.com/InvoiceLeaf/integration-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/InvoiceLeaf/integration-sdk/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
